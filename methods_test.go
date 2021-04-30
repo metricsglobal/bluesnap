@@ -8,10 +8,13 @@ import (
 )
 
 func TestAuthOnly(t *testing.T) {
-	c := New(http.DefaultClient, testURL, Credentials{
-		Username: testUsername,
-		Password: testPassword,
-	})
+	c := New(http.DefaultClient, testURL)
+	opts := Opts{
+		Credentials: Credentials{
+			Username: testUsername,
+			Password: testPassword,
+		},
+	}
 	tests := []struct {
 		name    string
 		input   Serializer
@@ -223,7 +226,7 @@ func TestAuthOnly(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			o := card.Response{}
-			if err := c.Auth(test.input, &o); (err != nil) != test.wantErr {
+			if err := c.Auth(test.input, &o, opts); (err != nil) != test.wantErr {
 				t.Error(err)
 			}
 			if !CompareResponse(test.output.(*card.Response), &o) {

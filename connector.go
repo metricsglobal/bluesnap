@@ -20,9 +20,12 @@ type Deserializer interface {
 }
 
 type Connector struct {
-	Client      *http.Client
-	url         string
-	credentials Credentials
+	Client *http.Client
+	url    string
+}
+
+type Opts struct {
+	Credentials Credentials
 }
 
 type Credentials struct {
@@ -30,15 +33,14 @@ type Credentials struct {
 	Password string
 }
 
-func New(client *http.Client, url string, credentials Credentials) Connector {
+func New(client *http.Client, url string) Connector {
 	return Connector{
 		Client:      client,
 		url:         url,
-		credentials: credentials,
 	}
 }
 
-func (c Connector) do(method, endpoint string, input Serializer, output Deserializer) error {
+func (c Connector) do(method, endpoint string, input Serializer, output Deserializer, opts Opts) error {
 	// TODO check output is a pointer
 	body, err := input.ToJSON()
 	if err != nil {
@@ -52,7 +54,7 @@ func (c Connector) do(method, endpoint string, input Serializer, output Deserial
 		return err
 	}
 
-	req.Header.Add("Authorization", "Basic "+c.credentials.Parse())
+	req.Header.Add("Authorization", "Basic "+opts.Credentials.Parse())
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
 

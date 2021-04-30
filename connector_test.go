@@ -1124,13 +1124,16 @@ func TestCardAuth(t *testing.T) {
 		//},
 	}
 
-	c := New(http.DefaultClient, testURL, Credentials{
-		Username: testUsername,
-		Password: testPassword,
-	})
+	c := New(http.DefaultClient, testURL)
+	opts := Opts{
+		Credentials: Credentials{
+			Username: testUsername,
+			Password: testPassword,
+		},
+	}
 	for _, scenario := range scenarios {
 		resp := card.Response{}
-		if err := c.do("POST", "/services/2/transactions", scenario.input, &resp); err != nil {
+		if err := c.do("POST", "/services/2/transactions", scenario.input, &resp, opts); err != nil {
 			t.Errorf(err.Error())
 		}
 		if scenario.output == nil {
