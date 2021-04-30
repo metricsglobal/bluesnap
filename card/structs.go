@@ -24,6 +24,7 @@ type Request struct {
 	TransactionOrderSource string                       `json:"transactionOrderSource,omitempty"`
 	TransactionInitiator   string                       `json:"transactionInitiator,omitempty"`
 	RecurringTransaction   string                       `json:"recurringTransaction"`
+	TransactionID          string                       `json:"transactionId"`
 }
 
 type Response struct {

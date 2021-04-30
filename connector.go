@@ -3,10 +3,11 @@ package bluesnap
 import (
 	"bytes"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
+	"reflect"
 )
 
 type Serializer interface {
@@ -35,21 +36,26 @@ type Credentials struct {
 
 func New(client *http.Client, url string) Connector {
 	return Connector{
-		Client:      client,
-		url:         url,
+		Client: client,
+		url:    url,
 	}
 }
 
 func (c Connector) do(method, endpoint string, input Serializer, output Deserializer, opts Opts) error {
-	// TODO check output is a pointer
-	body, err := input.ToJSON()
-	if err != nil {
-		return err
+	if reflect.ValueOf(output).Kind() != reflect.Ptr {
+		return errors.New("output must be a pointer")
 	}
-	fmt.Println("Input: " + string(body))
 
-	// TODO handle empty body
-	req, err := http.NewRequest(method, c.getURL(endpoint), bytes.NewBuffer(body))
+	var buf *bytes.Buffer = nil
+	if input != nil {
+		body, err := input.ToJSON()
+		if err != nil {
+			return err
+		}
+		buf = bytes.NewBuffer(body)
+	}
+
+	req, err := http.NewRequest(method, c.getURL(endpoint), buf)
 	if err != nil {
 		return err
 	}
@@ -62,22 +68,19 @@ func (c Connector) do(method, endpoint string, input Serializer, output Deserial
 	if err != nil {
 		return err
 	}
-	fmt.Println("Status Code: " + strconv.FormatInt(int64(resp.StatusCode), 10))
-
-	// TODO handle status_code
+	if resp.StatusCode > 299 {
+		return fmt.Errorf("invalid status code [%d]", resp.StatusCode)
+	}
 
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Output: " + string(respBody))
-	fmt.Println("----------------")
-	//return nil
 	if output != nil {
 		return output.FromJSON(respBody)
 	}
-	return nil // TODO error
+	return nil
 }
 
 func (c Connector) getURL(endpoint string) string {
