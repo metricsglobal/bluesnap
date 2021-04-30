@@ -20,7 +20,7 @@ type Deserializer interface {
 }
 
 type Connector struct {
-	client      *http.Client
+	Client      *http.Client
 	url         string
 	credentials Credentials
 }
@@ -32,7 +32,7 @@ type Credentials struct {
 
 func New(client *http.Client, url string, credentials Credentials) Connector {
 	return Connector{
-		client:      client,
+		Client:      client,
 		url:         url,
 		credentials: credentials,
 	}
@@ -56,7 +56,7 @@ func (c Connector) do(method, endpoint string, input Serializer, output Deserial
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
 
-	resp, err := c.client.Do(req)
+	resp, err := c.Client.Do(req)
 	if err != nil {
 		return err
 	}
