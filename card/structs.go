@@ -20,31 +20,35 @@ type Request struct {
 	PFToken                string                       `json:"pfToken,omitempty"`
 	Level3Data             *Level3DataRequest           `json:"level3Data,omitempty"`
 	StoreCard              bool                         `json:"storeCard,omitempty"`
-	NetworkTransactionInfo []string                     `json:"networkTransactionInfo,omitempty"` // TODO
+	NetworkTransactionInfo map[string]string            `json:"networkTransactionInfo,omitempty"` // TODO
 	TransactionOrderSource string                       `json:"transactionOrderSource,omitempty"`
 	TransactionInitiator   string                       `json:"transactionInitiator,omitempty"`
+	RecurringTransaction   string                       `json:"recurringTransaction"`
 }
 
 type Response struct {
-	CardTransactionType     string              `json:"cardTransactionType"`
-	TransactionID           string              `json:"transactionId"`
-	SoftDescriptor          string              `json:"softDescriptor"`
-	Amount                  float64             `json:"Amount"`
-	USDAmount               float64             `json:"usdAmount"`
-	Currency                string              `json:"currency"`
-	TransactionApprovalDate string              `json:"transactionApprovalDate"`
-	TransactionApprovalTime string              `json:"transactionApprovalTime"`
-	CardHolderInfo          CardHolderInfo      `json:"cardHolderInfo"`
-	VaultedShopperID        int64               `json:"vaultedShopperId"`
-	CreditCard              CreditCardResponse  `json:"creditCard"`
-	ProcessingInfo          ProcessingInfo      `json:"processingInfo"`
-	FraudResultInfo         FraudResultInfo     `json:"fraudResultInfo"`
-	VendorInfo              VendorInfo          `json:"vendorInfo"`
-	VendorsInfo             VendorsInfo         `json:"vendorsInfo"`
-	TransactionMetadata     TransactionMetadata `json:"transactionMetaData"`
-	MerchantTransactionId   string              `json:"merchantTransactionId"`
-	TaxReference            string              `json:"taxReference"`
-	AVSResponseCode         string              `json:"avsResponseCode"`
+	CardTransactionType     string                `json:"cardTransactionType"`
+	TransactionID           string                `json:"transactionId"`
+	SoftDescriptor          string                `json:"softDescriptor"`
+	Amount                  float64               `json:"Amount"`
+	USDAmount               float64               `json:"usdAmount"`
+	Currency                string                `json:"currency"`
+	TransactionApprovalDate string                `json:"transactionApprovalDate"`
+	TransactionApprovalTime string                `json:"transactionApprovalTime"`
+	CardHolderInfo          CardHolderInfo        `json:"cardHolderInfo"`
+	VaultedShopperID        int64                 `json:"vaultedShopperId"`
+	CreditCard              CreditCardResponse    `json:"creditCard"`
+	Wallet                  WalletResponse        `json:"wallet"`
+	ThreeDSecure            *ThreeDSecureResponse `json:"threeDSecure,omitempty"`
+	// TODO add NetworkTransactionInfo
+	ProcessingInfo        ProcessingInfo      `json:"processingInfo"`
+	FraudResultInfo       FraudResultInfo     `json:"fraudResultInfo"`
+	VendorInfo            VendorInfo          `json:"vendorInfo"`
+	VendorsInfo           VendorsInfo         `json:"vendorsInfo"`
+	TransactionMetadata   TransactionMetadata `json:"transactionMetaData"`
+	MerchantTransactionId string              `json:"merchantTransactionId"`
+	TaxReference          string              `json:"taxReference"`
+	AVSResponseCode       string              `json:"avsResponseCode"`
 }
 
 type WalletRequest struct {
@@ -53,6 +57,7 @@ type WalletRequest struct {
 }
 
 type WalletResponse struct {
+	WalletType         string              `json:"walletType"`
 	BillingContactInfo *BillingContactInfo `json:"billingContactInfo,omitempty"`
 	TokenizedCard      *TokenizedCard      `json:"tokenizedCard,omitempty"`
 }
@@ -87,6 +92,9 @@ type TokenizedCard struct {
 	CardLastFourDigits  string `json:"cardLastFourDigits,omitempty"`
 	CardType            string `json:"cardType,omitempty"`
 	CardSubType         string `json:"cardSubType,omitempty"`
+	BinCategory         string `json:"binCategory,omitempty"`
+	CardRegulated       string `json:"cardRegulated,omitempty"`
+	IssuingCountryCode  string `json:"issuingCountryCode,omitempty"`
 	DPANExpirationMonth string `json:"dpanExpirationMonth,omitempty"`
 	DPANExpirationYear  string `json:"dpanExpirationYear,omitempty"`
 	DPANLastFourDigits  string `json:"dpanLastFourDigits,omitempty"`
@@ -98,9 +106,9 @@ type VendorsInfo struct {
 }
 
 type VendorInfo struct {
-	VendorId          int64 `json:"vendorId,omitempty"`
-	CommissionPercent int64 `json:"commissionPercent,omitempty"`
-	CommissionAmount  int64 `json:"commissionAmount,omitempty"`
+	VendorId          int64   `json:"vendorId,omitempty"`
+	CommissionPercent float64 `json:"commissionPercent,omitempty"`
+	CommissionAmount  int64   `json:"commissionAmount,omitempty"`
 }
 
 // CardHolderInfo request and response struct
@@ -131,11 +139,11 @@ type TransactionFraudInfoRequest struct {
 }
 
 type FraudProduct struct {
-	FraudProductName     string `json:"fraudProductName,omitempty"`
-	FraudProductDesc     string `json:"fraudProductDesc,omitempty"`
-	FraudProductType     string `json:"fraudProductType,omitempty"`
-	FraudProductQuantity int64  `json:"fraudProductQuantity,omitempty"`
-	FraudProductPrice    float64  `json:"fraudProductPrice,omitempty"`
+	FraudProductName     string  `json:"fraudProductName,omitempty"`
+	FraudProductDesc     string  `json:"fraudProductDesc,omitempty"`
+	FraudProductType     string  `json:"fraudProductType,omitempty"`
+	FraudProductQuantity int64   `json:"fraudProductQuantity,omitempty"`
+	FraudProductPrice    float64 `json:"fraudProductPrice,omitempty"`
 }
 
 type EnterpriseUDFs struct {
