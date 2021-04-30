@@ -2,6 +2,7 @@ package bluesnap
 
 import (
 	"math/rand"
+	"net/http"
 	"reflect"
 	"testing"
 	"time"
@@ -16,6 +17,8 @@ func init() {
 const (
 	testURL         = "https://sandbox.bluesnap.com"
 	testCredentials = "QVBJXzE0NDQ2NTAyMDMxNDQ5NDA0MjIzNjU6QkxVRTEyMw=="
+	testUsername    = "API_1444650203144940422365"
+	testPassword    = "BLUE123"
 )
 
 func TestCardAuth(t *testing.T) {
@@ -1121,7 +1124,10 @@ func TestCardAuth(t *testing.T) {
 		//},
 	}
 
-	c := New(testURL, testCredentials)
+	c := New(http.DefaultClient, testURL, Credentials{
+		Username: testUsername,
+		Password: testPassword,
+	})
 	for _, scenario := range scenarios {
 		resp := card.Response{}
 		if err := c.do("POST", "/services/2/transactions", scenario.input, &resp); err != nil {

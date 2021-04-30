@@ -2,6 +2,7 @@ package bluesnap
 
 import (
 	"bytes"
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -21,12 +22,17 @@ type Deserializer interface {
 type Connector struct {
 	client      *http.Client
 	url         string
-	credentials string
+	credentials Credentials
 }
 
-func New(url, credentials string) Connector {
+type Credentials struct {
+	Username string
+	Password string
+}
+
+func New(client *http.Client, url string, credentials Credentials) Connector {
 	return Connector{
-		client:      http.DefaultClient, // TODO
+		client:      client,
 		url:         url,
 		credentials: credentials,
 	}
@@ -46,7 +52,7 @@ func (c Connector) do(method, endpoint string, input Serializer, output Deserial
 		return err
 	}
 
-	req.Header.Add("Authorization", "Basic "+c.credentials)
+	req.Header.Add("Authorization", "Basic "+c.credentials.Parse())
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
 
@@ -74,4 +80,8 @@ func (c Connector) do(method, endpoint string, input Serializer, output Deserial
 
 func (c Connector) getURL(endpoint string) string {
 	return c.url + endpoint
+}
+
+func (c Credentials) Parse() string {
+	return base64.StdEncoding.EncodeToString([]byte(c.Username + ":" + c.Password))
 }

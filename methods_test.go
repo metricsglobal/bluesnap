@@ -1,13 +1,17 @@
 package bluesnap
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/metricsglobal/bluesnap/card"
 )
 
 func TestAuthOnly(t *testing.T) {
-	c := New(testURL, testCredentials)
+	c := New(http.DefaultClient, testURL, Credentials{
+		Username: testUsername,
+		Password: testPassword,
+	})
 	tests := []struct {
 		name    string
 		input   Serializer
