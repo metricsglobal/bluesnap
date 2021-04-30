@@ -10,10 +10,12 @@ import (
 
 type Serializer interface {
 	ToJSON() ([]byte, error)
+	Method() string
 }
 
 type Deserializer interface {
 	FromJSON(data []byte) error
+	Method() string
 }
 
 type Connector struct {

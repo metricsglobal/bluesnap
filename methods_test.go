@@ -219,7 +219,7 @@ func TestAuthOnly(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			o := card.Response{}
-			if err := c.CardAuth(test.input, &o); (err != nil) != test.wantErr {
+			if err := c.Auth(test.input, &o); (err != nil) != test.wantErr {
 				t.Error(err)
 			}
 			if !CompareResponse(test.output.(*card.Response), &o) {
