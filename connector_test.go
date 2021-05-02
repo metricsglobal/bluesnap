@@ -1297,15 +1297,15 @@ func compareProcessingInfo(t *testing.T, expected, actual card.ProcessingInfo) {
 	equalsString(t, "networkTransactionId", expected.NetworkTransactionId, actual.NetworkTransactionId)
 }
 
-func compareThreeDSecure(t *testing.T, expected, actual *card.ThreeDSecureResponse) {
-	if expected == nil {
-		nill(t, "threeDSecure", actual)
-		return
-	}
-	notNil(t, "3DauthenticationResult", actual)
-	if actual == nil {
-		return
-	}
+func compareThreeDSecure(t *testing.T, expected, actual card.ThreeDSecureResponse) {
+	//if expected == nil {
+	//	nill(t, "threeDSecure", actual)
+	//	return
+	//}
+	//notNil(t, "3DauthenticationResult", actual)
+	//if actual == nil {
+	//	return
+	//}
 	equalsString(t, "authenticationResult", expected.AuthenticationResult, actual.AuthenticationResult)
 }
 

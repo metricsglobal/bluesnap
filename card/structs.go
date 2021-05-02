@@ -28,28 +28,34 @@ type Request struct {
 }
 
 type Response struct {
-	CardTransactionType     string                `json:"cardTransactionType"`
-	TransactionID           string                `json:"transactionId"`
-	SoftDescriptor          string                `json:"softDescriptor"`
 	Amount                  float64               `json:"Amount"`
-	USDAmount               float64               `json:"usdAmount"`
+	OpenToCapture           float64               `json:"openToCapture"`
+	VaultedShopperID        int64                 `json:"vaultedShopperId"`
+	MerchantTransactionId   string                `json:"merchantTransactionId"`
+	ProcessingInfo          ProcessingInfo       `json:"processingInfo"`
+	SoftDescriptor          string                `json:"softDescriptor"`
+	DescriptorPhoneNumber   string                `json:"descriptorPhoneNumber"`
+	TaxReference            string                `json:"taxReference"`
+	CardHolderInfo          CardHolderInfo       `json:"cardHolderInfo"`
 	Currency                string                `json:"currency"`
 	TransactionApprovalDate string                `json:"transactionApprovalDate"`
 	TransactionApprovalTime string                `json:"transactionApprovalTime"`
-	CardHolderInfo          CardHolderInfo        `json:"cardHolderInfo"`
-	VaultedShopperID        int64                 `json:"vaultedShopperId"`
-	CreditCard              CreditCardResponse    `json:"creditCard"`
-	Wallet                  WalletResponse        `json:"wallet"`
-	ThreeDSecure            *ThreeDSecureResponse `json:"threeDSecure,omitempty"`
-	// TODO add NetworkTransactionInfo
-	ProcessingInfo        ProcessingInfo      `json:"processingInfo"`
-	FraudResultInfo       FraudResultInfo     `json:"fraudResultInfo"`
-	VendorInfo            VendorInfo          `json:"vendorInfo"`
-	VendorsInfo           VendorsInfo         `json:"vendorsInfo"`
-	TransactionMetadata   TransactionMetadata `json:"transactionMetaData"`
-	MerchantTransactionId string              `json:"merchantTransactionId"`
-	TaxReference          string              `json:"taxReference"`
-	AVSResponseCode       string              `json:"avsResponseCode"`
+	FraudResultInfo         FraudResultInfo      `json:"fraudResultInfo"`
+	CreditCard              CreditCardResponse   `json:"creditCard"`
+	CardTransactionType     string                `json:"cardTransactionType"`
+	ThreeDSecure            ThreeDSecureResponse `json:"threeDSecure"`
+	TransactionID           string                `json:"transactionId"`
+	OriginalTransactionID   string                `json:"originalTransactionId"`
+	Chargebacks             Chargebacks           `json:"chargebacks"`
+	Refunds                 Refunds               `json:"refunds"`
+	Wallet                  WalletResponse       `json:"wallet"`
+	VendorInfo              VendorInfo            `json:"vendorInfo"`
+	VendorsInfo             VendorsInfo           `json:"vendorsInfo"`
+	Level3Data              Level3DataResponse   `json:"level3Data"`
+	StoreCard               bool                  `json:"storeCard"`
+	TransactionMetadata     TransactionMetadata   `json:"transactionMetaData"`
+	AVSResponseCode         string                `json:"avsResponseCode"`
+	USDAmount               float64               `json:"usdAmount"`
 }
 
 type WalletRequest struct {
@@ -256,4 +262,54 @@ type ProcessingInfo struct {
 
 type FraudResultInfo struct {
 	DeviceDataCollector string `json:"deviceDataCollector"`
+}
+
+type Refunds struct {
+	Refund              []RefundResponse   `json:"refund"`
+	BalanceAmount       float64            `json:"balanceAmount"`
+	TaxBalanceAmount    float64            `json:"taxBalanceAmount"`
+	VendorBalanceAmount float64            `json:"vendorBalanceAmount"`
+	VendorsBalanceInfo  VendorsBalanceInfo `json:"vendorsBalanceInfo"`
+}
+
+type RefundResponse struct {
+	Amount              float64             `json:"amount"`
+	TaxAmount           float64             `json:"taxAmount"`
+	Currency            string              `json:"currency"`
+	Date                string              `json:"date"`
+	RefundTransactionId int64               `json:"refundTransactionId"`
+	VendorAmount        float64             `json:"vendorAmount"`
+	VendorsRefundInfo   VendorsRefundInfo   `json:"vendorsRefundInfo"`
+	TransactionMetaData TransactionMetadata `json:"transactionMetaData"`
+	Reason              string              `json:"reason"`
+	CancelSubscriptions bool                `json:"cancelSubscriptions"`
+}
+
+type VendorsBalanceInfo struct {
+	VendorBalanceInfo []VendorBalanceInfo `json:"vendorBalanceInfo"`
+}
+
+type VendorBalanceInfo struct {
+	VendorID     int64  `json:"vendorId"`
+	VendorAmount string `json:"vendorAmount"`
+}
+
+type VendorsRefundInfo struct {
+	VendorRefundInfo []VendorRefundInfo `json:"vendorRefundInfo"`
+}
+
+type VendorRefundInfo struct {
+	VendorID     int64  `json:"vendorId"`
+	VendorAmount string `json:"vendorAmount"`
+}
+
+type Chargebacks struct {
+	Chargeback []Chargeback `json:"chargeback"`
+}
+
+type Chargeback struct {
+	Amount                  string `json:"amount"`
+	ChargebackTransactionId int64  `json:"chargebackTransactionId"`
+	Currency                string `json:"currency"`
+	Date                    string `json:"date"`
 }
