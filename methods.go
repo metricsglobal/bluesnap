@@ -6,9 +6,9 @@ import (
 	"github.com/metricsglobal/bluesnap/card"
 )
 
-func (c Connector) Sale(input Serializer, output Deserializer, opts Opts) error {
+func (c Connector) Sale(input Serializer, output Deserializer, opts Opts) (Errors, error) {
 	if input.Method() != output.Method() {
-		return errors.New("input method differs from output method")
+		return emptyErrors(), errors.New("input method differs from output method")
 	}
 
 	switch input.Method() {
@@ -16,12 +16,12 @@ func (c Connector) Sale(input Serializer, output Deserializer, opts Opts) error 
 		return c.do("POST", "/services/2/transactions", input, output, opts)
 	}
 
-	return errors.New("invalid method passed")
+	return emptyErrors(), errors.New("invalid method passed")
 }
 
-func (c Connector) Auth(input Serializer, output Deserializer, opts Opts) error {
+func (c Connector) Auth(input Serializer, output Deserializer, opts Opts) (Errors, error) {
 	if input.Method() != output.Method() {
-		return errors.New("input method differs from output method")
+		return emptyErrors(), errors.New("input method differs from output method")
 	}
 
 	switch input.Method() {
@@ -29,12 +29,12 @@ func (c Connector) Auth(input Serializer, output Deserializer, opts Opts) error 
 		return c.do("POST", "/services/2/transactions", input, output, opts)
 	}
 
-	return errors.New("invalid method passed")
+	return emptyErrors(), errors.New("invalid method passed")
 }
 
-func (c Connector) Capture(input Serializer, output Deserializer, opts Opts) error {
+func (c Connector) Capture(input Serializer, output Deserializer, opts Opts) (Errors, error) {
 	if input.Method() != output.Method() {
-		return errors.New("input method differs from output method")
+		return emptyErrors(), errors.New("input method differs from output method")
 	}
 
 	switch input.Method() {
@@ -42,13 +42,12 @@ func (c Connector) Capture(input Serializer, output Deserializer, opts Opts) err
 		return c.do("POST", "/services/2/transactions", input, output, opts)
 	}
 
-
-	return errors.New("invalid method passed")
+	return emptyErrors(), errors.New("invalid method passed")
 }
 
-func (c Connector) AuthReversal(input Serializer, output Deserializer, opts Opts) error {
+func (c Connector) AuthReversal(input Serializer, output Deserializer, opts Opts) (Errors, error) {
 	if input.Method() != output.Method() {
-		return errors.New("input method differs from output method")
+		return emptyErrors(), errors.New("input method differs from output method")
 	}
 
 	switch input.Method() {
@@ -56,14 +55,14 @@ func (c Connector) AuthReversal(input Serializer, output Deserializer, opts Opts
 		return c.do("POST", "/services/2/transactions", input, output, opts)
 	}
 
-	return errors.New("invalid method passed")
+	return emptyErrors(), errors.New("invalid method passed")
 }
 
-func (c Connector) Retrieve(transactionID string, output Deserializer, opts Opts) error {
+func (c Connector) Retrieve(transactionID string, output Deserializer, opts Opts) (Errors, error) {
 	switch output.Method() {
 	case card.Method:
 		return c.do("POST", "/services/2/transactions/"+transactionID, nil, output, opts)
 	}
 
-	return errors.New("invalid method passed")
+	return emptyErrors(), errors.New("invalid method passed")
 }

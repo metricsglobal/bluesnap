@@ -3,8 +3,8 @@ package bluesnap
 import (
 	"bytes"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"reflect"
@@ -41,23 +41,23 @@ func New(client *http.Client, url string) Connector {
 	}
 }
 
-func (c Connector) do(method, endpoint string, input Serializer, output Deserializer, opts Opts) error {
+func (c Connector) do(method, endpoint string, input Serializer, output Deserializer, opts Opts) (Errors, error) {
 	if reflect.ValueOf(output).Kind() != reflect.Ptr {
-		return errors.New("output must be a pointer")
+		return emptyErrors(), errors.New("output must be a pointer")
 	}
 
 	var buf *bytes.Buffer = nil
 	if input != nil {
 		body, err := input.ToJSON()
 		if err != nil {
-			return err
+			return emptyErrors(), err
 		}
 		buf = bytes.NewBuffer(body)
 	}
 
 	req, err := http.NewRequest(method, c.getURL(endpoint), buf)
 	if err != nil {
-		return err
+		return emptyErrors(), err
 	}
 
 	req.Header.Add("Authorization", "Basic "+opts.Credentials.Parse())
@@ -66,21 +66,27 @@ func (c Connector) do(method, endpoint string, input Serializer, output Deserial
 
 	resp, err := c.Client.Do(req)
 	if err != nil {
-		return err
-	}
-	if resp.StatusCode > 299 {
-		return fmt.Errorf("invalid status code [%d]", resp.StatusCode)
+		return emptyErrors(), err
 	}
 
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return emptyErrors(), err
+	}
+
+	if resp.StatusCode > 399 {
+		var errs Errors
+		if err := json.Unmarshal(respBody, &errs); err != nil {
+			return emptyErrors(), err
+		}
+		errs.StatusCode = resp.StatusCode
+		return errs, nil
 	}
 
 	if output != nil {
-		return output.FromJSON(respBody)
+		return emptyErrors(), output.FromJSON(respBody)
 	}
-	return nil
+	return emptyErrors(), nil
 }
 
 func (c Connector) getURL(endpoint string) string {
